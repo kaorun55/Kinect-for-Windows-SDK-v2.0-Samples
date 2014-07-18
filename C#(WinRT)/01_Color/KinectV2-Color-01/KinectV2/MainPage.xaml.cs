@@ -42,9 +42,15 @@ namespace KinectV2
             base.OnNavigatedTo( e );
 
             try {
+                // Kinectを開く
                 kinect = KinectSensor.GetDefault();
+                if ( kinect == null ) {
+                    throw new Exception( "Kinectを開けません" );
+                }
+
                 kinect.Open();
 
+                // カラー画像の情報を作成する(BGRAフォーマット)
                 colorFrameDesc = kinect.ColorFrameSource.CreateFrameDescription( ColorImageFormat.Bgra );
 
                 colorBitmap = new WriteableBitmap( colorFrameDesc.Width, colorFrameDesc.Height );
@@ -52,6 +58,7 @@ namespace KinectV2
 
                 colorBuffer = new byte[colorFrameDesc.Width * colorFrameDesc.Height * colorFrameDesc.BytesPerPixel];
 
+                // カラーリーダーを開く
                 colorFrameReader = kinect.ColorFrameSource.OpenReader();
                 colorFrameReader.FrameArrived += colorFrameReader_FrameArrived;
             }
@@ -63,9 +70,16 @@ namespace KinectV2
 
         void colorFrameReader_FrameArrived( ColorFrameReader sender, ColorFrameArrivedEventArgs args )
         {
+            // カラーフレームを取得する
             using ( var colorFrame = args.FrameReference.AcquireFrame() ) {
+                if ( colorFrame == null ) {
+                    return;
+                }
+
+                // BGRAデータを取得する
                 colorFrame.CopyConvertedFrameDataToArray( colorBuffer, ColorImageFormat.Bgra );
 
+                // ビットマップにする
                 var stream = colorBitmap.PixelBuffer.AsStream();
                 stream.Write( colorBuffer, 0, colorBuffer.Length );
                 colorBitmap.Invalidate();

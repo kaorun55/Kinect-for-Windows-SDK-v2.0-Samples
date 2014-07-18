@@ -35,6 +35,7 @@ namespace KinectV2
         private void Window_Loaded( object sender, RoutedEventArgs e )
         {
             try {
+                // Kinectを開く
                 kinect = KinectSensor.GetDefault();
                 if ( kinect == null ) {
                     throw new Exception("Kinectを開けません");
@@ -44,9 +45,8 @@ namespace KinectV2
 
                 // カラー画像の情報を作成する(BGRAフォーマット)
                 colorFrameDesc = kinect.ColorFrameSource.CreateFrameDescription( ColorImageFormat.Bgra );
-                colorBuffer = new byte[colorFrameDesc.Width * colorFrameDesc.Height * colorFrameDesc.BytesPerPixel];
 
-                // カラーリーダを開く
+                // カラーリーダーを開く
                 colorFrameReader = kinect.ColorFrameSource.OpenReader();
                 colorFrameReader.FrameArrived += colorFrameReader_FrameArrived;
             }
@@ -79,6 +79,7 @@ namespace KinectV2
                 }
 
                 // BGRAデータを取得する
+                colorBuffer = new byte[colorFrameDesc.Width * colorFrameDesc.Height * colorFrameDesc.BytesPerPixel];
                 colorFrame.CopyConvertedFrameDataToArray( colorBuffer, ColorImageFormat.Bgra );
 
                 // ビットマップにする
