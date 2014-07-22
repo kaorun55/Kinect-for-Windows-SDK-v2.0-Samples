@@ -24,6 +24,7 @@ namespace KinectV2
         KinectSensor kinect;
 
         DepthFrameReader depthFrameReader;
+        FrameDescription depthFrameDesc;
         ushort[] depthBuffer;
 
         WriteableBitmap depthImage;
@@ -46,23 +47,26 @@ namespace KinectV2
                     throw new Exception("Kinectを開けません");
                 }
 
+                kinect.Open();
+
                 // 表示のためのデータを作成
-                var depthFrameDesc = kinect.DepthFrameSource.FrameDescription;
+                depthFrameDesc = kinect.DepthFrameSource.FrameDescription;
+
+                // 表示のためのビットマップに必要なものを作成
                 depthImage = new WriteableBitmap( depthFrameDesc.Width, depthFrameDesc.Height,
                     96, 96, PixelFormats.Gray16, null );
                 depthBuffer = new ushort[depthFrameDesc.LengthInPixels];
                 depthRect = new Int32Rect( 0, 0, depthFrameDesc.Width, depthFrameDesc.Height );
                 depthStride = (int)(depthFrameDesc.Width * depthFrameDesc.BytesPerPixel);
 
-                depthPoint = new Point( depthFrameDesc.Width / 2, depthFrameDesc.Height / 2 );
-
                 ImageDepth.Source = depthImage;
+
+                // 初期の位置表示座標
+                depthPoint = new Point( depthFrameDesc.Width / 2, depthFrameDesc.Height / 2 );
 
                 // Depthリーダーを開く
                 depthFrameReader = kinect.DepthFrameSource.OpenReader();
                 depthFrameReader.FrameArrived += depthFrameReader_FrameArrived;
-
-                kinect.Open();
             }
             catch ( Exception ex ) {
                 MessageBox.Show( ex.Message );
@@ -85,6 +89,13 @@ namespace KinectV2
 
         void depthFrameReader_FrameArrived( object sender, DepthFrameArrivedEventArgs e )
         {
+            UpdateDepthFrame(e);
+            DrawDepthFrame();
+        }
+
+        // Depthフレームの更新
+        private void UpdateDepthFrame( DepthFrameArrivedEventArgs e )
+        {
             using ( var depthFrame = e.FrameReference.AcquireFrame() ) {
                 if ( depthFrame == null ) {
                     return;
@@ -92,20 +103,24 @@ namespace KinectV2
 
                 // Depthデータを取得する
                 depthFrame.CopyFrameDataToArray( depthBuffer );
-
-                // 距離情報の表示を更新する
-                UpdateDepthValue( depthFrame );
-
-                // 画像化する
-                for ( int i = 0; i < depthBuffer.Length; i++ ) {
-                    depthBuffer[i] = (ushort)(depthBuffer[i] * 65535 / 8000);
-                }
-
-                depthImage.WritePixels( depthRect, depthBuffer, depthStride, 0 );
             }
         }
 
-        private void UpdateDepthValue( DepthFrame depthFrame )
+        // Depthフレームの表示
+        private void DrawDepthFrame()
+        {
+            // 距離情報の表示を更新する
+            UpdateDepthValue();
+
+            // 0-8000のデータを0-65535のデータに変換する(見やすく)
+            for ( int i = 0; i < depthBuffer.Length; i++ ) {
+                depthBuffer[i] = (ushort)(depthBuffer[i] * 65535 / 8000);
+            }
+
+            depthImage.WritePixels( depthRect, depthBuffer, depthStride, 0 );
+        }
+
+        private void UpdateDepthValue()
         {
             CanvasPoint.Children.Clear();
 
@@ -122,7 +137,7 @@ namespace KinectV2
             CanvasPoint.Children.Add( ellipse );
 
             // クリックしたポイントのインデックスを計算する
-            int depthindex =(int)((depthPoint.Y  * depthFrame.FrameDescription.Width) + depthPoint.X);
+            int depthindex =(int)((depthPoint.Y  * depthFrameDesc.Width) + depthPoint.X);
 
             // クリックしたポイントの距離を表示する
             var text = new TextBlock()

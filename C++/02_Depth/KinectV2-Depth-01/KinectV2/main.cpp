@@ -82,6 +82,7 @@ public:
         // バッファーを作成する
         depthBuffer.resize( depthWidth * depthHeight );
 
+        // マウスクリックのイベントを登録する
         cv::namedWindow( DepthWindowName );
         cv::setMouseCallback( DepthWindowName, &KinectApp::mouseCallback, this );
     }
@@ -118,24 +119,31 @@ private:
     // データの更新処理
     void update()
     {
-        updateDepth();
+        updateDepthFrame();
     }
 
-    void updateDepth()
+    void updateDepthFrame()
     {
         // Depthフレームを取得する
         ComPtr<IDepthFrame> depthFrame;
         auto ret = depthFrameReader->AcquireLatestFrame( &depthFrame );
-        if ( ret == S_OK ){
-            // データを取得する
-            ERROR_CHECK( depthFrame->CopyFrameDataToArray( depthBuffer.size(), &depthBuffer[0] ) );
-
-            // 自動解放を使わない場合には、フレームを解放する
-            // depthFrame->Release();
+        if ( ret != S_OK ){
+            return;
         }
+
+        // データを取得する
+        ERROR_CHECK( depthFrame->CopyFrameDataToArray( depthBuffer.size(), &depthBuffer[0] ) );
+
+        // 自動解放を使わない場合には、フレームを解放する
+        // depthFrame->Release();
     }
 
     void draw()
+    {
+        drawDepthFrame();
+    }
+
+    void drawDepthFrame()
     {
         // Depthデータを表示する
         cv::Mat depthImage( depthHeight, depthWidth, CV_8UC1 );
