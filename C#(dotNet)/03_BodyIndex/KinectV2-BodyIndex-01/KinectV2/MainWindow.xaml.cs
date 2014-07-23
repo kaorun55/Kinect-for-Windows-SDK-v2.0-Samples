@@ -52,6 +52,8 @@ namespace KinectV2
 
                 // 表示のためのデータを作成
                 bodyIndexFrameDesc = kinect.DepthFrameSource.FrameDescription;
+
+                // ボディインデックデータ用のバッファ
                 bodyIndexBuffer = new byte[bodyIndexFrameDesc.LengthInPixels];
 
                 // 表示のためのビットマップに必要なものを作成
@@ -60,10 +62,12 @@ namespace KinectV2
                 bodyIndexColorRect = new Int32Rect( 0, 0, bodyIndexFrameDesc.Width, bodyIndexFrameDesc.Height );
                 bodyIndexColorStride = (int)(bodyIndexFrameDesc.Width * bodyIndexColorBytesPerPixel);
 
+                // ボディインデックデータをBGRA(カラー)データにするためのバッファ
                 bodyIndexColorBuffer = new byte[bodyIndexFrameDesc.LengthInPixels * bodyIndexColorBytesPerPixel];
 
                 ImageBodyIndex.Source = bodyIndexColorImage;
 
+                // 色付けするために色の配列を作成する
                 bodyIndexColors = new Color[]{
                     Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow, Colors.Pink, Colors.Purple,
                 };
@@ -114,7 +118,7 @@ namespace KinectV2
         // ボディインデックスフレームの表示
         private void DrawBodyIndexFrame()
         {
-            // ボディインデックスの値をカラーデータにする
+            // ボディインデックスデータをBGRAデータに変換する
             for ( int i = 0; i < bodyIndexBuffer.Length; i++ ) {
                 var index = bodyIndexBuffer[i];
                 var colorIndex = i * 4;
@@ -134,6 +138,7 @@ namespace KinectV2
                 }
             }
 
+            // ビットマップにする
             bodyIndexColorImage.WritePixels( bodyIndexColorRect, bodyIndexColorBuffer, bodyIndexColorStride, 0 );
         }
     }

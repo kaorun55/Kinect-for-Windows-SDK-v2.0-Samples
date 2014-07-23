@@ -100,8 +100,7 @@ private:
         auto ret = bodyIndexFrameReader->AcquireLatestFrame( &bodyIndexFrame );
         if ( ret == S_OK ){
             // BGRAの形式でデータを取得する
-            ERROR_CHECK( bodyIndexFrame->CopyFrameDataToArray(
-                bodyIndexBuffer.size(), &bodyIndexBuffer[0] ) );
+            ERROR_CHECK( bodyIndexFrame->CopyFrameDataToArray( bodyIndexBuffer.size(), &bodyIndexBuffer[0] ) );
 
             // スマートポインタを使ってない場合は、自分でフレームを解放する
             // bodyIndexFrame->Release();

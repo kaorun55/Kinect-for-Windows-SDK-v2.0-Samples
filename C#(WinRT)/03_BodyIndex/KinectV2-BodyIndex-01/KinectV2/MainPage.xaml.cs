@@ -29,10 +29,12 @@ namespace KinectV2
     {
         KinectSensor kinect;
         
+        // BodyIndexのデータ
         BodyIndexFrameReader bodyIndexFrameReader;
         FrameDescription bodyIndexFrameDesc;
         byte[] bodyIndexBuffer;
 
+        // BodyIndexを可視化するためのもの
         int bodyIndexColorBytesPerPixels = 4;
         byte[] bodyIndexColorBuffer;
         WriteableBitmap bodyIndexColorBitmap;
@@ -69,6 +71,7 @@ namespace KinectV2
                 // ボディインデックデータをBGRA(カラー)データにするためのバッファ
                 bodyIndexColorBuffer = new byte[bodyIndexFrameDesc.LengthInPixels * bodyIndexColorBytesPerPixels];
 
+                // 色付けするために色の配列を作成する
                 bodyIndexColors = new Color[]{
                     Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow, Colors.Pink, Colors.Purple,
                 };
