@@ -115,34 +115,36 @@ namespace KinectV2
         private void DrawHandState( Joint joint, TrackingConfidence trackingConfidence, HandState handState )
         {
             // 手の追跡信頼性が高い
-            if ( trackingConfidence == TrackingConfidence.High ) {
-                // 手が開いている(パー)
-                if ( handState == HandState.Open ) {
-                    DrawEllipse( joint, 40, new SolidColorBrush( new Color()
-                    {
-                        R = 255,
-                        G = 255,
-                        A = 128
-                    } ) );
-                }
-                // チョキのような感じ
-                else if ( handState == HandState.Lasso ) {
-                    DrawEllipse( joint, 40, new SolidColorBrush( new Color()
-                    {
-                        R = 255,
-                        B = 255,
-                        A = 128
-                    } ) );
-                }
-                // 手が閉じている(グー)
-                else if ( handState == HandState.Closed ) {
-                    DrawEllipse( joint, 40, new SolidColorBrush( new Color()
-                    {
-                        G = 255,
-                        B = 255,
-                        A = 128
-                    } ) );
-                }
+            if ( trackingConfidence != TrackingConfidence.High ) {
+                return;
+            }
+
+            // 手が開いている(パー)
+            if ( handState == HandState.Open ) {
+                DrawEllipse( joint, 40, new SolidColorBrush( new Color()
+                {
+                    R = 255,
+                    G = 255,
+                    A = 128
+                } ) );
+            }
+            // チョキのような感じ
+            else if ( handState == HandState.Lasso ) {
+                DrawEllipse( joint, 40, new SolidColorBrush( new Color()
+                {
+                    R = 255,
+                    B = 255,
+                    A = 128
+                } ) );
+            }
+            // 手が閉じている(グー)
+            else if ( handState == HandState.Closed ) {
+                DrawEllipse( joint, 40, new SolidColorBrush( new Color()
+                {
+                    G = 255,
+                    B = 255,
+                    A = 128
+                } ) );
             }
         }
 
