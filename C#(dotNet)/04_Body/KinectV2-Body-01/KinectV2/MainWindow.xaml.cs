@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace KinectV2
         KinectSensor kinect;
 
         BodyFrameReader bodyFrameReader;
-        Body[] bodies = new Body[6];
+        Body[] bodies;
 
         public MainWindow()
         {
@@ -40,6 +41,9 @@ namespace KinectV2
                 }
 
                 kinect.Open();
+
+                // Bodyを入れる配列を作る
+                bodies = new Body[kinect.BodyFrameSource.BodyCount];
 
                 // ボディーリーダーを開く
                 bodyFrameReader = kinect.BodyFrameSource.OpenReader();
