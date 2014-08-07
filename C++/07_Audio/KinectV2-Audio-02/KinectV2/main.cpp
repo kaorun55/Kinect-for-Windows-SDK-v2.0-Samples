@@ -117,7 +117,7 @@ private:
         auto X2 = 0 * cos( alpha ) - offsetY * sin( alpha );
         auto Y2 = 0 * sin( alpha ) + offsetY * cos( alpha );
 
-        回転させた線を描画する
+        // 回転させた線を描画する
         cv::line( image, cv::Point( offsetX, 0 ), cv::Point( offsetX + X2, Y2 ), cv::Scalar( 255, 255, 255 ), 10 );
 
         cv::imshow("AudioBeamAngle", image);
